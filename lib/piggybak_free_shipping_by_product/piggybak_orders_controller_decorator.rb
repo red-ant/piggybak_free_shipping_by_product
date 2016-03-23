@@ -11,16 +11,18 @@ module PiggybakFreeShippingByProduct
       cart = Piggybak::Cart.new(request.cookies["cart"])
       cart.set_extra_data(params)
       shipping_methods = Piggybak::ShippingMethod.lookup_methods(cart)
-      
+
       free_shipping_method = Piggybak::ShippingMethod.all.detect { |s| s.klass == "::PiggybakFreeShippingByProduct::FreeShippingByProduct" }
       if free_shipping_method.present?
         free_shipping_available = shipping_methods.detect { |s| s[:id] == free_shipping_method.id }
         if free_shipping_available.present?
           render :json => [free_shipping_available]
-          return 
+          return
         end
       end
-
+      unless params[:country_id] == 14
+        shipping_methods = Piggybak::ShippingMethod.lookup_methods(cart).select {|l| l[:label].match("International")}
+      end
       render :json => shipping_methods
     end
   end
