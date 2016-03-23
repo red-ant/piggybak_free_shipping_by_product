@@ -22,6 +22,7 @@ module PiggybakFreeShippingByProduct
       end
       unless params[:country_id] == "14"
         shipping_methods = Piggybak::ShippingMethod.lookup_methods(cart).select {|l| l[:label].match("International")}
+        render :json => shipping_methods
       end
       render :json => shipping_methods
     end
